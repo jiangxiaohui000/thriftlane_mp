@@ -1,16 +1,12 @@
-# ===== 依赖包（最大性能杀手）=====
+# ===== 依赖包 =====
 node_modules/
-# 云函数各自的依赖也需要忽略
 cloudfunctions/**/node_modules/
-# miniprogram 构建出的 npm 产物（由开发者工具自动生成，不需要提交）
 miniprogram/miniprogram_npm/
 
-# ===== 本地私有配置（不应提交到仓库）=====
-# project.private.config.json 包含个人调试条件、本地 appid 等，属于本地状态
+# ===== 本地配置 =====
 project.private.config.json
 
-# ===== 开发工具产物 =====
-# 微信开发者工具生成的缓存目录
+# ===== 系统文件 =====
 .DS_Store
 **/.DS_Store
 
@@ -24,6 +20,5 @@ npm-debug.log*
 *.swp
 *.swo
 
-# ===== AI 辅助工具 =====
-# WorkBuddy AI 助手生成的工作记忆和对话状态，属于本地会话数据，不应提交
+# ===== AI 辅助 =====
 .workbuddy/

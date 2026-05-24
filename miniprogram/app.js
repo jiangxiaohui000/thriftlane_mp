@@ -30,11 +30,16 @@ App({
       typeof cb === 'function' && cb(_this.globalData.openid);
     } else {
       // 创建 Promise，防止重复调用
+      const LOGIN_TIMEOUT = 8000; // 8秒超时
       this._loginPromise = new Promise((resolve, reject) => {
-        wx.cloud.callFunction({ // 进入小程序先请求登录接口取用户的openid
+        const callPromise = wx.cloud.callFunction({ // 进入小程序先请求登录接口取用户的openid
           name: 'login',
           data: {},
-        }).then(res => {
+        });
+        const timeoutPromise = new Promise((_, timeoutReject) => {
+          setTimeout(() => timeoutReject(new Error('login timeout')), LOGIN_TIMEOUT);
+        });
+        Promise.race([callPromise, timeoutPromise]).then(res => {
           if (res && res.result) {
             // 检查是否有错误
             if (res.result.error) {

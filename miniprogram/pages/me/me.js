@@ -412,6 +412,9 @@ Page({
 						wx.compressImage({ src: path, quality: 20 }).then(compressResult => {
 							const handledPath = compressResult.tempFilePath;
 							this.imgSecCheck(handledPath, imgSecCheckArr, tempFilesLength, () => { imgSecCheckCount++ ; return imgSecCheckCount; }, concurrencyCtrl);
+						}).catch(err => {
+							console.error('compressImage error:', err);
+							imgSecCheckCount++;
 						})
 					} else { // 图片大小小于1M，直接进行安全检查
 						this.imgSecCheck(path, imgSecCheckArr, tempFilesLength, () => { imgSecCheckCount++ ; return imgSecCheckCount; }, concurrencyCtrl);

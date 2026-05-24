@@ -28,6 +28,7 @@ exports.main = async (event, context) => {
       method: 'get',
       url: event.imgData,
       responseType: 'arraybuffer',
+      timeout: 5000,
       headers: { "Content-Type": "*" }
     });
     const buffer = res.data;

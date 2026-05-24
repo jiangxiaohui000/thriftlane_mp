@@ -95,6 +95,7 @@ Component({
                 } : {})
               })
             } else {
+              this.fatalRebuildCount++;
               this.initWatch(this.data.chats.length ? {
                 sendTimeTS: _.gt(this.data.chats[this.data.chats.length - 1].sendTimeTS),
               } : {})

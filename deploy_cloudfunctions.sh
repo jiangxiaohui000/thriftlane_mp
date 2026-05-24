@@ -12,9 +12,9 @@ CF_DIR="$PROJECT/cloudfunctions"
 BACKUP_DIR="/tmp/cloudfunctions_nm_backup_$(date +%s)"
 
 FUNCTIONS=(
-  addMessageData addUserData authorizationRevoke feedback
+  addMessageData addUserData authorizationRevoke clearUnreadCount feedback
   getMessageData getProductsData getProductsInfoData getUserData
-  imgSecCheck login msgSecCheck openapi postProduct
+  imgSecCheck login msgSecCheck postProduct
   removeChatsData removeMessageData search searchHotKey
   updateProductsData updateUserData
 )
@@ -48,9 +48,9 @@ deploy_batch() {
   sleep 3
 }
 
-deploy_batch addMessageData addUserData authorizationRevoke feedback
+deploy_batch addMessageData addUserData authorizationRevoke clearUnreadCount feedback
 deploy_batch getMessageData getProductsData getProductsInfoData getUserData imgSecCheck login
-deploy_batch msgSecCheck openapi postProduct removeChatsData removeMessageData search searchHotKey updateProductsData updateUserData
+deploy_batch msgSecCheck postProduct removeChatsData removeMessageData search searchHotKey updateProductsData updateUserData
 
 # 恢复 node_modules
 echo ""

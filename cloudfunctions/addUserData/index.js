@@ -9,17 +9,19 @@ cloud.init({
 exports.main = async (event, context) => {
   const db = cloud.database()
   const _ = db.command
-  const result = await db.collection('data_user').where({ uid: _.eq(event.openid) }).get()
-  if(!result.data.length) { // 先判断当前openid在用户集合里有没有，没有的话加入到用户集合
-    db.collection('data_user').add({
-      data: {
-        uid: event.openid,
-        collectedProducts: [],
-      }
-    })
-  }
-
-  return {
-    result
+  try {
+    const result = await db.collection('data_user').where({ uid: _.eq(event.openid) }).get()
+    if(!result.data.length) { // 先判断当前openid在用户集合里有没有，没有的话加入到用户集合
+      await db.collection('data_user').add({
+        data: {
+          uid: event.openid,
+          collectedProducts: [],
+        }
+      })
+    }
+    return { result }
+  } catch(e) {
+    console.error('addUserData error:', e)
+    return { error: e.message }
   }
 }
