@@ -1,7 +1,7 @@
 {
-  "name": "xiaoyuanbao",
+  "name": "thriftlane-mp",
   "version": "1.0.0",
-  "description": "拾旧坊旨在帮助大学生快速交易已有的物品，打造安全、高效的校园生态圈。",
+  "description": "一个基于社区属性的二手交易平台，选择你所在的小区、学校，看看有没有心仪的~",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

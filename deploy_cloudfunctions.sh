@@ -6,7 +6,7 @@
 set -e
 
 ENV="cloud1-1gdhscygd67ee3f4"
-PROJECT="/Users/jiangxiaohui/Documents/xiaoyuanbao_miniprogram"
+PROJECT="/Users/jiangxiaohui/Documents/thriftlane_mp"
 CLI="/Applications/wechatwebdevtools.app/Contents/MacOS/cli"
 CF_DIR="$PROJECT/cloudfunctions"
 BACKUP_DIR="/tmp/cloudfunctions_nm_backup_$(date +%s)"
