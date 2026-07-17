@@ -91,7 +91,7 @@
   </view>
   <view wx:if="{{isLoaded}}">
     <mp-loading show="{{showLoading}}" type="circle"></mp-loading>
-    <view class="no-more" wx:if="{{!showLoading}}">
+    <view class="no-more" wx:if="{{!hasMore}}">
       <i class="iconfont icon-Null-data"></i>
       <text>没有更多啦~</text>
     </view>  

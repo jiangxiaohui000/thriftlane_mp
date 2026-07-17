@@ -50,7 +50,7 @@ exports.main = async (event, context) => {
     }
   } else {
     return {
-      status: 200,
+      status: 404,
       errMsg: 'no matching record to update',
     }
   }

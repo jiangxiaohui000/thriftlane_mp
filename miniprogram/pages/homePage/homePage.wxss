@@ -24,6 +24,7 @@ page {
   align-items: center;
   margin-right: 20rpx;
   flex-shrink: 0;
+  width: 40rpx;
 }
 /* 已授权后：小区名胶囊（高度与搜索框 70rpx 对齐，圆角 20rpx 一致） */
 .estate-tag {
@@ -253,7 +254,7 @@ page {
   }
 }
 .icon-dingwei::before {
-  font-size: 24rpx;
+  font-size: 40rpx;
   color: #3CB371;
 }
 

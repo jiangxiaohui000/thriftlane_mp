@@ -75,16 +75,23 @@ Page({
   onLoad: function (options) {
     if(options && options.params) {
       const params = JSON.parse(options.params);
+      const img = params.img || [];
       this.data.productDesc = params.desc || '';
-      this.data.imageList = params.img || [];
+      this.data.imageList = img;
+      this.data.fileIdArr = img.slice(); // 编辑时保留已有图片，发布不会丢图
       this.data.price = params.currentPrice || '';
       this.data.originPrice = params.originPrice || '';
+      this.data.userInfo = {
+        avatarUrl: params.avatarUrl || '',
+        nickName: params.nickName || '',
+      };
       this.setData({
         productDesc: this.data.productDesc,
         imageList: this.data.imageList,
         imgUrls: this.data.imageList,
         price: this.data.price,
         originPrice: this.data.originPrice,
+        userInfo: this.data.userInfo,
         releaseDisabled: !(this.data.productDesc && this.data.imageList.length && this.data.price),
       });
     }
@@ -102,14 +109,18 @@ Page({
     });
     // 编辑
     eventChannel.on('toEdit', res => {
+      const img = (res && res.imageList) || [];
       res && res.productDesc && (this.data.productDesc = res.productDesc);
-      res && res.imageList && (this.data.imageList = res.imageList);
+      this.data.imageList = img;
+      this.data.fileIdArr = img.slice(); // 保留已有图片，避免发布后丢图
       res && res.price && (this.data.price = res.price);
+      if (res && res.avatarUrl) this.data.userInfo = { avatarUrl: res.avatarUrl, nickName: res.nickName || '' };
       this.setData({
         productDesc: this.data.productDesc,
         imageList: this.data.imageList,
         imgUrls: this.data.imageList,
         price: this.data.price,
+        userInfo: this.data.userInfo,
         releaseDisabled: !(this.data.productDesc && this.data.imageList.length && this.data.price),
       })
     });
@@ -118,14 +129,9 @@ Page({
       this.setData({
         userAddress: this.data.userLocation.address,
       });
-    } else {
-      const _this = this;
-      wx.getSetting({
-        success: res => {
-          this.getUserLocation(res, _this); // 获取用户位置信息
-        }
-      });  
     }
+    // 注意：位置不再自动获取。位置属隐私接口，需用户点击"授权"按钮（用户手势）触发，
+    // 并由 wx.onNeedPrivacyAuthorize 弹窗先行征得同意。
     wx.enableAlertBeforeUnload({
       message: '确定退出吗？\n退出后已编辑的内容将不会被保存'
     });
@@ -143,7 +149,7 @@ Page({
       const tempFiles = res.tempFiles; // 临时文件（包含临时文件路径和大小）
 			const tempFilesLength = res.tempFiles.length; // 临时文件数量
       this.data.tempFilePaths = tempFiles.map(f => f.tempFilePath); // 临时文件路径
-      if(tempFiles.some(item => item.size / 1024 / 1024 > 3)) {
+      if(tempFiles.some(item => item.size / 1024 / 1024 > 5)) {
 				this.setData({
 					toptipsShow: true,
 					resultText: '图片大小不得超过 5MB，请重新选择',
@@ -187,11 +193,11 @@ Page({
 	// 将图片上传（调用公共工具函数）
 	uploadImg(item, index1, tempFilesLength) {
 		uploadImg(this, item, index1, tempFilesLength, 'post', () => {
-			this.data.imageList.push(...this.data.tempFilePaths);
+			// 用真实的云存储 fileID 作为展示，与发布数据保持一致（避免临时路径残留/重复）
 			this.setData({
-				imageList: this.data.imageList,
-				imgUrls: this.data.imageList,
-				releaseDisabled: !(this.data.productDesc && this.data.imageList.length && this.data.price),
+				imageList: this.data.fileIdArr,
+				imgUrls: this.data.fileIdArr,
+				releaseDisabled: !(this.data.productDesc && this.data.fileIdArr.length && this.data.price),
 			});
 		});
 	},
@@ -211,9 +217,12 @@ Page({
   },
   // 删除图片
   deleteImg(e) {
-    this.data.imageList.splice(e.currentTarget.dataset.index, 1);
+    const idx = e.currentTarget.dataset.index;
+    this.data.imageList.splice(idx, 1);
+    if (this.data.fileIdArr.length) this.data.fileIdArr.splice(idx, 1); // 同步删除已上传的 fileID
     this.setData({
       imageList: this.data.imageList,
+      fileIdArr: this.data.fileIdArr,
       releaseDisabled: !(this.data.productDesc && this.data.imageList.length && this.data.price),
     });
   },
@@ -284,6 +293,10 @@ Page({
   // 发布
   releaseProduct() {
     if(this.data.productDesc && this.data.imageList.length && this.data.price) {
+      // userInfo 兜底：编辑/异常情况下可能为空，回退到本地存储的用户信息
+      const userInfo = (this.data.userInfo && this.data.userInfo.avatarUrl)
+        ? this.data.userInfo
+        : { avatarUrl: wx.getStorageSync('avatarUrl') || '', nickName: wx.getStorageSync('nickName') || '' };
       wx.showLoading({ title: '发布中...' });
       wx.cloud.callFunction({
         name: 'msgSecCheck',
@@ -300,8 +313,8 @@ Page({
                   brandName: this.data.brandName,
                   finenessTag: this.data.selectedTag,
                   userAddress: this.data.userLocation ? this.data.userLocation.address : this.data.userAddress,
-                  avatarUrl: this.data.userInfo.avatarUrl,
-                  nickName: this.data.userInfo.nickName,
+                  avatarUrl: userInfo.avatarUrl,
+                  nickName: userInfo.nickName,
                   isCollected: [],
                   isOff: false,
                   isDeleted: false,
@@ -424,9 +437,12 @@ Page({
     qqmapsdk.reverseGeocoder({ // 再通过腾讯位置服务获取到地理位置
       location: { latitude, longitude },
       success: res => {
-        _this.setData({
-          userAddress: res.result.formatted_addresses.recommend,
-        });
+        const addr = res.result.formatted_addresses && res.result.formatted_addresses.recommend;
+        if (addr) {
+          _this.setData({
+            userAddress: addr,
+          });
+        }
       },
       fail: e => { // 腾讯位置服务出错
       }

@@ -229,10 +229,14 @@ Page({
 		wx.navigateTo({
 			url: '../postProduct/postProduct',
 			success: res => {
+				const p = this.data.productInfo;
 				const params = {
-					productDesc: this.data.productInfo.desc,
-					imageList: this.data.productInfo.img,
-					price: this.data.productInfo.currentPrice,
+					productDesc: p.desc,
+					imageList: p.img, // 已有的云存储 fileID 列表
+					price: p.currentPrice,
+					originPrice: p.originPrice,
+					avatarUrl: p.avatarUrl,
+					nickName: p.nickName,
 				}
 				res.eventChannel.emit('toEdit', params);
 			}

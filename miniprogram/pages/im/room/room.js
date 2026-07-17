@@ -6,7 +6,7 @@ Page({
     logged: false,
     takeSession: false,
     requestResult: '',
-    chatRoomEnvId: 'xiaoyuanbao',
+    chatRoomEnvId: 'cloud1-1gdhscygd67ee3f4',
     chatRoomCollection: 'data_chat',
     groupId: '',
     chatInfo: {},

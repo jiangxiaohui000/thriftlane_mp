@@ -49,6 +49,7 @@ Page({
 			currentPage: 1,
 		},
 		showLoading: false,
+		hasMore: false, // 是否还有更多商品可加载（分页用，不再与 loading 态混用）
 		openid: '',
 		hasUserInfo: false,
 		currentDataId: '',
@@ -152,7 +153,7 @@ Page({
 					this.setData({
 						productsList: [...this.data.productsList, ...data],
 						postNum: total,
-            showLoading: !!data.length,
+						hasMore: data.length === this.data.pageData.pageSize,
 					});
 				}
 			  if(data2 && data2.result && data2.result.count) { // 卖出的商品
@@ -203,14 +204,14 @@ Page({
 				this.setData({
 					productsList: [...this.data.productsList, ...data],
 					postNum: total,
-					showLoading: !!data.length,
+					hasMore: data.length === this.data.pageData.pageSize,
 				});
 			} else {
 				// 没有数据时也要更新页面，确保删除后列表被清空
 				this.setData({
 					productsList: this.data.productsList,
 					postNum: total,
-					showLoading: false,
+					hasMore: false,
 				});
 			}
 		}).catch(e => {
@@ -218,7 +219,7 @@ Page({
 			this.setData({
 				productsList: [],
 				postNum: 0,
-				showLoading: false,
+				hasMore: false,
 			});
 		});
 	},
@@ -392,7 +393,7 @@ Page({
 				const tempFiles = res.tempFiles; // 临时文件（包含临时文件路径和大小）
 				const tempFilesLength = res.tempFiles.length; // 临时文件数量
 				this.data.tempFilePaths = tempFiles.map(f => f.tempFilePath); // 临时文件路径
-				if(tempFiles.some(item => item.size / 1024 / 1024 > 3)) {
+				if(tempFiles.some(item => item.size / 1024 / 1024 > 5)) {
 					this.setData({
 						toptipsShow: true,
 						resultText: '图片大小不得超过 5MB，请重新选择',
@@ -462,7 +463,7 @@ Page({
 	},
   // 上滑加载更多
 	productScroll: function() {
-    if(this.data.showLoading) {
+    if(this.data.hasMore) {
       this.data.pageData.currentPage += 1;
       this.getReleasedData();
     }
@@ -808,6 +809,18 @@ Page({
 		wx.navigateTo({
 			url: '../feedback/feedback',
 		});
+	},
+	// 隐私政策
+	openPrivacyContract() {
+		if (typeof wx.openPrivacyContract === 'function') {
+			wx.openPrivacyContract({
+				fail: () => {
+					wx.showToast({ title: '打开隐私政策失败', icon: 'none' });
+				},
+			});
+		} else {
+			wx.showToast({ title: '当前微信版本不支持', icon: 'none' });
+		}
 	},
 	// 阻止事件冒泡
 	stopPropagation() {

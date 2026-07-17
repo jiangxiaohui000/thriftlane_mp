@@ -141,8 +141,11 @@ function uploadImg(ctx, item, index, tempFilesLength, prefix, onAllUploaded) {
     success: uploadFileResult => {
       const fileID = uploadFileResult.fileID;
       ctx.data.fileIdArr.push(fileID);
+      if (!ctx._uploadCount) ctx._uploadCount = 0;
+      ctx._uploadCount++;
       wx.hideLoading();
-      if (tempFilesLength === index + 1) { // 最后一张上传完成
+      if (ctx._uploadCount >= tempFilesLength) { // 全部上传完成
+        ctx._uploadCount = 0;
         onAllUploaded();
       }
     },

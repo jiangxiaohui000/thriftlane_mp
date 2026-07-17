@@ -1,17 +1,21 @@
 //app.js
 const { phoneType } = require('./utils/phoneType');
+const { initPrivacy } = require('./utils/privacy');
+
 App({
   onLaunch: function () {
     if (!wx.cloud) {
       console.error('请使用 2.2.3 或以上的基础库以使用云能力')
     } else {
       wx.cloud.init({
+        env: 'cloud1-1gdhscygd67ee3f4',
         traceUser: true,
       })
     }
-    this.globalData = {};
+    this.globalData = this.globalData || {};
     this.globalData.needAdaptIphoneX = phoneType();
     this.login(); // 静默登录，获取 openid
+    initPrivacy(); // 注册隐私授权处理
   },
   login: function(cb) {
     const _this = this;

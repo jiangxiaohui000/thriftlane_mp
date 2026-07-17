@@ -91,8 +91,8 @@
         <!-- 下架icon -->
         <i class="iconfont icon-lianxi-yixiajia" wx:if="{{item.isOff}}"></i>
       </view>
-      <mp-loading show="{{showLoading && productsList.length < postNum}}" type="circle"></mp-loading>
-      <view class="no-more" wx:if="{{!(showLoading && productsList.length < postNum)}}">
+      <mp-loading show="{{hasMore && productsList.length < postNum}}" type="circle"></mp-loading>
+      <view class="no-more" wx:if="{{!(hasMore && productsList.length < postNum)}}">
         <i class="iconfont icon-Null-data"></i>
         <text class="no-more-text">没有更多啦~</text>
       </view>
@@ -131,4 +131,5 @@
 <mp-toptips msg="{{resultText}}" type="{{toptipsType}}" show="{{toptipsShow}}" delay="3000"></mp-toptips>
 
 <!-- 问题反馈 -->
+<text class="privacy" bindtap="openPrivacyContract">隐私\n政策</text>
 <text class="feedback" bindtap="feedback">问题\n反馈</text>

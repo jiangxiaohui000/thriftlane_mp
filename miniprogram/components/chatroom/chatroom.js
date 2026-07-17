@@ -83,8 +83,6 @@ Component({
         const { collection } = this.properties
         const db = this.db
         const _ = db.command
-
-        console.info(`开始监听`, criteria)
         this.messageListener = db.collection(collection).where(this.mergeCommonCriteria(criteria)).watch({
           onChange: this.onRealtimeMessageSnapshot.bind(this),
           onError: e => {
@@ -105,7 +103,6 @@ Component({
       }, '初始化监听失败')
     },
     onRealtimeMessageSnapshot(snapshot) {
-      console.info(`收到消息`, snapshot)
 
       if (snapshot.type === 'init') {
         this.setData({
